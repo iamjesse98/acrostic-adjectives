@@ -1,29 +1,21 @@
 import { h, Component } from 'preact';
 import mdl from 'material-design-lite/material';
-import { Button, Card, TextField } from 'preact-mdl';
+import { Button, Card, TextField, List, ListItem, ListItemContent } from 'preact-mdl';
 
-// async function getAdj(letter) {
-// 	let response = await fetch(`http://api.wordnik.com:80/v4/words.json/search/${letter}?caseSensitive=true&includePartOfSpeech=adjective&excludePartOfSpeech=verb&minCorpusCount=7&maxCorpusCount=7&minDictionaryCount=1&maxDictionaryCount=-1&minLength=7&maxLength=-1&skip=0&limit=12&api_key=a2a73e7b926c924fad7001ca3111acd55af2ffabf50eb4ae5`);
-// 	let data = await response.json();
-// 	return data;
-// }
+import Text from './Text';
 
 /* eslint-disable */
 export default class App extends Component {
 	updateText = e => {
 		this.setState({ text: e.target.value });
 	};
-	getAdj = letter => {
-		return fetch(`http://api.wordnik.com:80/v4/words.json/search/${letter}?caseSensitive=true&includePartOfSpeech=adjective&excludePartOfSpeech=verb&minCorpusCount=7&maxCorpusCount=7&minDictionaryCount=1&maxDictionaryCount=-1&minLength=7&maxLength=-1&skip=0&limit=12&api_key=a2a73e7b926c924fad7001ca3111acd55af2ffabf50eb4ae5`)
-			.then(response => response.json())
-	}
+	
 	acrostic = e => {
-		this.state.text && this.state.text.split('').map(letter => {
-			this.getAdj(letter)
-				.then(adj => this.setState({ adjs: [ ...this.state.adjs, adj.searchResults[Math.floor(Math.random() * 11) + 1].word ] }));
-		});
-	}
-	render({ }, { text, adjs }) {
+		this.setState({ letters: [] })
+		this.state.text && this.setState({letters: this.state.text.toLowerCase().split('')})
+	};
+	
+	render({ }, { text, letters }) {
 		return (
 			<div id="app">
 				<h3 style={{ textAlign: 'center' }}>Acrostic Adjective Poem Generator</h3>
@@ -37,11 +29,18 @@ export default class App extends Component {
 						onInput={this.updateText}
 					/>
 					<Button style={{ background: 'dodgerblue', marginBottom: '2px' }} onClick={this.acrostic}>Generate</Button>
+					<br/>
 					{
-						text && `You Entered "${text}"`
-					}
-					{
-						adjs && this.state.adjs.map( adj => { <p>{ adj }</p> })
+						text && <Card shadow={2} style={{ margin: 'auto', padding: '3px', width: '300px' }}>
+							<h5 style={{ textAlign: 'center' }}>{`You Entered "${text}"`}</h5>
+							{
+								<List>
+									{
+										letters && letters.map(letter => <ListItem><ListItemContent><Text>{letter}</Text></ListItemContent></ListItem>)
+									}
+								</List>
+							}
+						</Card>
 					}
 				</Card>
 			</div>
